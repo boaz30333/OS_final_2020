@@ -44,18 +44,28 @@ int sched_getattr(pid_t pid,
 
 int main(int argc, char *argv[])
 {
-    int pid =  (int)getpid();
-        printf("my pid is: %d \n",pid);
-        char before[24];
-         sprintf(before, "chrt -p %d >>before.txt", pid);
-
- system(before);
-
-  
     int policy = atoi(argv[1]);
     int priority = atoi(argv[2]);
     struct sched_param s_param;
     struct sched_attr s_attr;
+    long pid =  (long)getpid();
+struct sched_attr before_s_attr;
+struct sched_attr result_s_attr;
+        printf("my pid is: %ld \n",pid);
+
+                if (sched_getattr(0, &before_s_attr,sizeof(before_s_attr), 0) == -1)
+        {
+            perror("sched_getattr");
+            exit(EXIT_FAILURE);
+        }
+FILE * fpa;
+fpa= fopen("before.txt","w+");
+fprintf(fpa,"pid %ld's current scheduling policy: %lu \n",pid,(unsigned long)before_s_attr.sched_policy);
+fprintf(fpa,"pid %ld's current scheduling priority: %lu \n",pid,(unsigned long)before_s_attr.sched_priority);
+fclose(fpa);
+
+  
+
     if (policy == 6)
     {
         s_attr.size = sizeof(struct sched_attr);
@@ -71,6 +81,7 @@ int main(int argc, char *argv[])
             perror("sched_setattr");
             exit(EXIT_FAILURE);
         }
+
     }
     else
     {
@@ -80,16 +91,21 @@ int main(int argc, char *argv[])
             perror("sched_setscheduler");
             exit(EXIT_FAILURE);
         }
-                if (sched_getattr(0, &s_attr,sizeof(s_attr), 0) == -1)
+ 
+
+    }
+                if (sched_getattr(0, &result_s_attr,sizeof(result_s_attr), 0) == -1)
         {
-            perror("sched_setattr");
+            perror("sched_getattr");
             exit(EXIT_FAILURE);
         }
-    }
+//FILE * fpa;
+fpa= fopen("after.txt","w+");
+fprintf(fpa,"pid %ld's current scheduling policy: %lu \n",pid,(unsigned long)result_s_attr.sched_policy);
+fprintf(fpa,"pid %ld's current scheduling priority: %lu \n",pid,(unsigned long)result_s_attr.sched_priority);
+fclose(fpa);
     printf("the result in before.txt and after.txt files after chrt command but \nyou can also execute chrt from other trminal and then kill this process by ctrl^z \n");
-        char after[23];
-         sprintf(after, "chrt -p %d >>after.txt", pid);
- system(after);
+
 while(1){
 
 }
