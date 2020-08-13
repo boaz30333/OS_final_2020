@@ -6,8 +6,8 @@ int main(int argc, char *argv[])
 {
     int status;
     long pid;
-    pid = atol(argv[1]);
-    status = kill(pid, 0); /* Null signal: process existence check */
+    pid = atol(argv[1]);  // convert string to long
+    status = kill(pid, 0);
     if (status == 0)
         printf("Process %ld exists", pid);
     else if (errno == EPERM)
