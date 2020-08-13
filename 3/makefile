@@ -12,4 +12,4 @@ set_policy.o: set_policy.c
 .PHONY: clean 
 	
 clean:
-	rm -f *.o *.out set_policy 
+	rm -f *.o *.out set_policy before.txt after.txt

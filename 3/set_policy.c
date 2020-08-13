@@ -9,26 +9,19 @@
 #include <linux/sched.h>
 #include <sys/syscall.h>
 #include <linux/types.h>
- #include <unistd.h>
-       #include <sys/time.h>
-       #include <sys/resource.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
-      
-
+    
 struct sched_attr
 {
     __u32 size;
-
     __u32 sched_policy;
     __u64 sched_flags;
-
-    /* SCHED_NORMAL, SCHED_BATCH */
     __s32 sched_nice;
-
-    /* SCHED_FIFO, SCHED_RR */
     __u32 sched_priority;
-
-    /* SCHED_DEADLINE (nsec) */
     __u64 sched_runtime;
     __u64 sched_deadline;
     __u64 sched_period;
@@ -51,9 +44,14 @@ int sched_getattr(pid_t pid,
 
 int main(int argc, char *argv[])
 {
-        printf("%ld \n", (long)getpid());
+    int pid =  (int)getpid();
+        printf("my pid is: %d \n",pid);
+        char before[24];
+         sprintf(before, "chrt -p %d >>before.txt", pid);
 
-    printf("policy: %d priority: %d\n",sched_getscheduler(0),getpriority(PRIO_PROCESS, 0));
+ system(before);
+
+  
     int policy = atoi(argv[1]);
     int priority = atoi(argv[2]);
     struct sched_param s_param;
@@ -82,13 +80,19 @@ int main(int argc, char *argv[])
             perror("sched_setscheduler");
             exit(EXIT_FAILURE);
         }
+                if (sched_getattr(0, &s_attr,sizeof(s_attr), 0) == -1)
+        {
+            perror("sched_setattr");
+            exit(EXIT_FAILURE);
+        }
     }
-    printf("after sched changes\n");
-    int policy_after=sched_getscheduler(0);
-    int priority_after= getpriority(PRIO_PROCESS, 0);
-    printf("policy: %d priority: %d",policy_after,priority_after);
+    printf("the result in before.txt and after.txt files after chrt command but \nyou can also execute chrt from other trminal and then kill this process by ctrl^z \n");
+        char after[23];
+         sprintf(after, "chrt -p %d >>after.txt", pid);
+ system(after);
+while(1){
 
-    pause();
+}
     exit(0);
 }
 
