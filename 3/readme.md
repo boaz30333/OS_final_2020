@@ -1,6 +1,7 @@
 how to run:
 1. use 'make' command to compile the program
-2. run the progrm in this way "./set_policy <number denote the policy> <number denote the priority>"
+2. run the progrm in this way " sudo ./set_policy  
+|number denote the policy| |number denote the priority| "
 
     note: 
     SCHED_OTHER(0) min/max priority    : 0/0
